@@ -29,7 +29,7 @@ imgs_test = imgs_test.reshape(-1, 28, 28, 1).astype("float32") / 255
 labels_train = labels_train.astype("float32")
 labels_test = labels_test.astype("float32")
 
-#! splitt and shuffle the data sothat the test data is 30% of the whole data
+#! split and shuffle the data sothat the test data is 30% of the whole data
 x_train, x_val, y_train, y_val = train_test_split(
     imgs_train, labels_train, test_size=0.3)
 
@@ -136,14 +136,8 @@ with tf.device("/GPU:0"):
     )
 
 
-#! --------------------------- Save the model ----------------------------------
+#! ----------------------- Save and Test the model -----------------------------
 
 model.save('english_digits_model')  # creates a pb file (Saved model)
-get_ipython().system('zip -r eng.zip "./english_digits_model"')
-
-
-#! ---------------------------------- Test -------------------------------------
 show_img(x_train, y_train, 1555)
-
-
 print(model.predict(x_train[1555].reshape(1, 28, 28, 1)).argmax())
