@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import os
 import random
 try:
     import os
@@ -18,7 +19,9 @@ PROBLEM_IMG_WIDTH = 512
 DRAWING_COLOR = (255, 255, 255)  # ! white
 
 print('[INFO]: Loading The Model...')
-MODEL = tf.keras.models.load_model('./english_digits_model')
+base_folder = os.path.dirname(__file__)
+path_model = os.path.join(base_folder, 'english_digits_model')
+MODEL = tf.keras.models.load_model(path_model)
 
 
 def create_problem(change_the_problem=True):
@@ -51,7 +54,7 @@ def create_problem(change_the_problem=True):
     font = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (w//2-150, h//2)
     fontScale = 2
-    fontColor = (255, 178, 150) if change_the_problem else (0, 0, 255)
+    fontColor = (0, 255, 0) if change_the_problem else (0, 0, 255)
     lineType = 2
     margin = 30
 
