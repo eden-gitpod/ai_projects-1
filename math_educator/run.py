@@ -14,12 +14,19 @@ except:
 drawing = False  # true if mouse is pressed
 ix, iy = -1, -1  # ! these will be used to draw on the canvas
 NUM1, NUM2 = -1, -1  # ! these are the numbers that will be shown in the math problem
-PROBLEM_IMG_HEIGHT = 200
-PROBLEM_IMG_WIDTH = 512
+
+#! notice that the dimensions below is for the math problem image that would be put
+#! on top of the drawing canvas to form the final full image that would be shown to the user
+PROBLEM_IMG_HEIGHT = 200  # ! height of the image problem
+PROBLEM_IMG_WIDTH = 512  # ! width of the image problem
+
+#! this is the paint-brush color
 DRAWING_COLOR = (255, 255, 255)  # ! white
 
 print('[INFO]: Loading The Model...')
+# ! folder containing the current script
 base_folder = os.path.dirname(__file__)
+#! the full path of the saved model so that we can load it
 path_model = os.path.join(base_folder, 'english_digits_model')
 MODEL = tf.keras.models.load_model(path_model)
 
@@ -39,6 +46,7 @@ def create_problem(change_the_problem=True):
     """
 
     global NUM1, NUM2
+    #! generate random numbers
     if change_the_problem:
         NUM1 = random.randint(0, 9)
         NUM2 = random.randint(0, 9)
@@ -49,8 +57,9 @@ def create_problem(change_the_problem=True):
             NUM2 = abs(5-NUM2)
 
     h, w = PROBLEM_IMG_HEIGHT, PROBLEM_IMG_WIDTH
-    background = np.zeros((h, w, 3), np.uint8)
+    background = np.zeros((h, w, 3), np.uint8)  # ! black image
 
+    #! write the math problem on the black background image
     font = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (w//2-150, h//2)
     fontScale = 2
@@ -65,7 +74,11 @@ def create_problem(change_the_problem=True):
                 fontColor,
                 lineType)
 
+    #! but a line under the math problem to give the user a hint
+    #!  about where the drawing canvas ends
     cv2.line(background, (0, h-margin), (w, h-margin), fontColor, 10)
+
+    #! but the problem image on top of the drawing canvas
     return np.vstack((background,
                       np.zeros((400, 512, 3), np.uint8)))
 
@@ -82,12 +95,15 @@ def recognize_digit(img):
         int: the predcited number
     """
     global MODEL
-
-    digit = cv2.resize(img[PROBLEM_IMG_HEIGHT:, :], (28, 28),)
+    #! resize the canvas image to (28x28)
+    #! which is the accepted dimensions of the deep learning model
+    digit = cv2.resize(img[PROBLEM_IMG_HEIGHT:, :], (28, 28))
+    #! the model input image should be grayscale
     digit = cv2.cvtColor(digit, cv2.COLOR_BGR2GRAY)
+    #! normalize the input image
     digit = digit.reshape(1, 28, 28, 1).astype('float32') / 255
 
-    return MODEL.predict(digit).argmax()
+    return MODEL.predict(digit).argmax()  # ! the predicted number
 
 
 def paint_brush(event, x, y, flags, param):
@@ -122,13 +138,23 @@ def paint_brush(event, x, y, flags, param):
         img = create_problem(change_problem)
 
 
-cv2.namedWindow('image')
+window_name = 'image'
+#! create a named widow so that we can track mouse movements inside it
+cv2.namedWindow(window_name)
+#! track the mouse movement
 cv2.setMouseCallback('image', paint_brush)
-img = create_problem()
+img = create_problem()  # ! the first problem to show for the user
+print('[INFO]: Running...')
 
 while True:
     cv2.imshow('image', img)
-    if cv2.waitKey(1) & 0xFF == 27:
-        break
+    #! we need to call the line below even we don't use it anywhere
+    #! but we need it so that we can show the image to the user
+    keyCode = cv2.waitKey(1)
 
-cv2.destroyAllWindows()
+    #! exit the program be window exit button if we exit the window
+    #! then its cv2.WND_PROP_VISIBLE would be 0.0
+    if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
+        print('[INFO]: Exiting The Program...')
+        cv2.destroyAllWindows()  # ! close any open windows
+        break
