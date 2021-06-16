@@ -1,5 +1,8 @@
 tasks:
   - command: python -m pip install nltk
+  - command: python -m pip install keras
+  - command: python -m pip install tensorflow
+  - command: python -m pip install sklearn
 
 vscode:
   extensions:
