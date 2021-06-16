@@ -1,0 +1,6 @@
+tasks:
+  - command: python -m pip install nltk
+
+vscode:
+  extensions:
+    - ms-python.python

@@ -3,10 +3,17 @@
 
 # In[1]:
 
-
 import nltk
-from nltk.book import *
 
+nltk.download('gutenberg')
+nltk.download('genesis')
+nltk.download('inaugural')
+nltk.download('nps_chat')
+nltk.download('webtext')
+nltk.download('treebank')
+nltk.download('punkt')
+
+from nltk.book import *
 
 # In[2]:
 
